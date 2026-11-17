@@ -22,7 +22,7 @@
   <div class="box" id="gateBox">
     <h2 class="script">Nuestra fecha</h2>
     <p>Escribe el día que lo cambió todo para poder entrar</p>
-    <input id="fecha" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10" autocomplete="off">
+    <input id="fecha" type="text" inputmode="text" pattern="[0-9/]*" placeholder="dd/mm/aaaa" maxlength="10" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
     <p id="gateMsg" class="msg" aria-live="polite"></p>
     <button class="btn" id="gateBtn">Entrar</button>
     <button class="link" id="gateClose">Volver</button>
