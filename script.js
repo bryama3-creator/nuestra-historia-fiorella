@@ -115,7 +115,7 @@ audio.onplay = audio.onpause = estado;
 /* ---------- Canción de la carta ----------
    ✏️ El MP3 debe estar en la MISMA carpeta que index.html. Para cambiar de
    canción o de volumen (0 a 1) edita estas dos líneas. */
-const CANCION_CARTA = 'cancion-carta.mp3';
+const CANCION_CARTA = 'musica.mp3';
 const VOLUMEN_CARTA = 0.35; // suave (en iPhone el volumen lo controla el celular)
 
 const carta = $('#cartaAudio'); carta.src = CANCION_CARTA; carta.loop = false;
