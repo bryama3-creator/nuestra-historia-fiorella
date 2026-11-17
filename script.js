@@ -105,7 +105,7 @@ function ir(id) {
   document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
   $('#' + id).classList.add('active'); scrollTo(0, 0);
   // el control de la canción de la carta se ve en la carta y en el menú
-  $('#musicCtl').hidden = !(id === 'letter' || id === 'menu') || !!$('#musicCtl').dataset.fallo;
+  $('#musicCtl').hidden = !(id === 'letter' || id === 'menu');
 }
 function estado() {
   document.querySelectorAll('[data-music]').forEach(b => b.textContent = audio.paused ? '▶ Reproducir música' : '⏸ Pausar música');
@@ -118,7 +118,7 @@ audio.onplay = audio.onpause = estado;
 const CANCION_CARTA = 'cancion-carta.mp3';
 const VOLUMEN_CARTA = 0.35; // suave (en iPhone el volumen lo controla el celular)
 
-const carta = new Audio(CANCION_CARTA);
+const carta = $('#cartaAudio'); carta.src = CANCION_CARTA; carta.loop = false;
 const ctl = $('#musicCtl');
 let fade;
 const etiqueta = t => ctl.querySelector('span').textContent = t;
@@ -136,13 +136,16 @@ function entradaSuave() { // sube el volumen poco a poco al empezar o reanudar
 }
 carta.onplay = () => { pintar(); entradaSuave(); };
 carta.onpause = carta.onended = pintar;
-carta.onerror = () => { ctl.dataset.fallo = 1; ctl.hidden = true; console.warn('No se encontró ' + CANCION_CARTA + ' junto a index.html'); };
-ctl.onclick = () => carta.paused ? carta.play().catch(() => {}) : carta.pause();
+carta.onerror = () => { // el archivo no cargó: lo avisamos en el botón para poder corregirlo
+  ctl.classList.remove('invita', 'suena'); ctl.classList.add('error'); etiqueta('Canción no encontrada');
+  console.warn('No se pudo cargar ' + CANCION_CARTA + '. Debe estar junto a index.html y con el nombre exacto.');
+};
+ctl.onclick = () => { if (carta.error) return; carta.paused ? carta.play().catch(() => {}) : carta.pause(); };
 function iniciarCarta() { // se llama dentro del clic de "Entrar" (así el navegador lo permite)
   carta.play().catch(err => {
-    if (err && err.name === 'NotAllowedError') { // el navegador la bloqueó: botón para iniciarla
-      ctl.classList.add('invita'); etiqueta('Toca para iniciar nuestra canción'); ctl.hidden = false;
-    }
+    if (carta.error) return; // el archivo no cargó (ya se avisó en el botón)
+    // el navegador la bloqueó (NotAllowedError u otro): botón bonito para iniciarla con un toque
+    ctl.classList.add('invita'); etiqueta('Toca para iniciar nuestra canción'); ctl.hidden = false;
   });
 }
 
