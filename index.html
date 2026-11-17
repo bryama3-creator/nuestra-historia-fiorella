@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Para el amor de mi vida ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="hearts"></div>
+
+<!-- 1. BIENVENIDA -->
+<section id="welcome" class="screen active">
+  <h1 class="title">Para el amor de mi vida <span class="beat">&lt;3</span></h1>
+  <p class="sub">Hay historias que merecen ser contadas y la nuestra es una de ellas</p>
+  <button class="btn" id="enterBtn">Ingresar</button>
+</section>
+
+<!-- 2. ACCESO CON LA FECHA (la clave se cambia en script.js → FECHA_CLAVE) -->
+<div id="gate" class="modal" hidden>
+  <div class="box" id="gateBox">
+    <h2 class="script">Nuestra fecha</h2>
+    <p>Escribe el día que lo cambió todo para poder entrar</p>
+    <input id="fecha" inputmode="numeric" placeholder="dd/mm/aaaa" maxlength="10" autocomplete="off">
+    <p id="gateMsg" class="msg" aria-live="polite"></p>
+    <button class="btn" id="gateBtn">Entrar</button>
+    <button class="link" id="gateClose">Volver</button>
+  </div>
+</div>
+
+<!-- 3. CARTA (✏️ puedes editar el texto aquí; cada <p class="p"> aparece uno tras otro) -->
+<section id="letter" class="screen">
+  <article class="paper">
+    <p class="p script big">Mi amor:</p>
+    <p class="p">Estás a punto de descubrir algo muy especial. He preparado este pequeño espacio para ti, donde quiero llevarte de la mano por cada capítulo de nuestra historia.</p>
+    <p class="p">Desde aquel 17 de septiembre de 2024, cuando comenzamos a conocernos, hasta cada momento que hemos compartido desde entonces. Aquí encontrarás nuestros primeros recuerdos, nuestras fotografías, nuestras sonrisas, nuestras aventuras y todos esos pequeños detalles que hicieron que nuestra historia fuera tan nuestra.</p>
+    <p class="p">Quiero que mientras recorras cada página, vuelvas a sentir lo bonito que fue cada momento. Que recuerdes cómo empezó todo, cuánto hemos vivido y cuánto hemos construido juntos.</p>
+    <p class="p">No se trata solamente de mirar fotografías o recordar fechas, sino de volver a vivir un poquito de todo lo que hemos sentido. Porque cada recuerdo tiene algo especial: tiene una parte de nosotros.</p>
+    <p class="p">Y si algo quiero que tengas presente mientras recorres esta historia, es que todavía nos quedan muchísimos momentos por vivir, lugares por conocer, sueños por cumplir y recuerdos por crear.</p>
+    <p class="p">Esta historia todavía no termina, mi amor... apenas estamos escribiendo nuestros capítulos más bonitos.</p>
+    <button class="btn p" id="startBtn">Comenzar nuestro viaje</button>
+  </article>
+</section>
+
+<!-- 4. MENÚ (se genera desde script.js) -->
+<section id="menu" class="screen">
+  <h2 class="title sm">Nuestro viaje</h2>
+  <p class="sub sm">Elige un capítulo</p>
+  <nav class="menu" id="menuGrid"></nav>
+</section>
+
+<!-- 5. SECCIONES (se generan desde script.js) -->
+<main id="views"></main>
+
+<!-- Foto ampliada -->
+<div id="lb" hidden><img alt=""><p></p></div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+/* ===================================================================
+   CONFIGURACIÓN — casi todo lo que vas a cambiar está en este bloque
+   =================================================================== */
+const FECHA_CLAVE = '17012025'; // ✏️ Contraseña: día+mes+año, solo números (17/01/2025)
+
+/* Atajo para una foto: item('historia', 1, ...) usa  imagenes/historia/foto1.jpg
+   ✏️ FOTOS: pon tus archivos en la carpeta de cada sección con esos nombres
+      (foto1.jpg, foto2.jpg…) o cambia el nombre aquí. Si falta una foto, se
+      ve un marco con el nombre del archivo que debes colocar. */
+const item = (carpeta, n, fecha, texto, titulo) =>
+  ({ src: `imagenes/${carpeta}/foto${n}.jpg`, fecha, texto, titulo });
+
+/* ✏️ CANCIONES: cada sección tiene la suya. Copia tu MP3 a la carpeta musica/
+   con el nombre indicado en "musica" (o cambia el nombre aquí). */
+const SECCIONES = {
+  historia: {
+    nombre: 'Nuestra historia', icono: '❦', tipo: 'galeria', musica: 'musica/historia.mp3',
+    intro: 'Cada foto es un capítulo. Desde el 17 de septiembre de 2024 hasta hoy.',
+    items: [ // ✏️ Fotos en orden cronológico: cambia fechas y textos
+      item('historia', 1, '17 sep 2024', 'Donde todo empezó'),
+      item('historia', 2, 'Fecha', 'Escribe aquí el recuerdo'),
+      item('historia', 3, 'Fecha', 'Escribe aquí el recuerdo'),
+      item('historia', 4, 'Fecha', 'Escribe aquí el recuerdo'),
+      item('historia', 5, '17 ene 2025', 'El día que nos elegimos'),
+      item('historia', 6, 'Hoy', 'Y seguimos escribiendo'),
+    ]},
+  historieta: {
+    nombre: 'Nuestra historieta', icono: '❖', tipo: 'comic', musica: 'musica/historieta.mp3',
+    intro: 'Nosotros, protagonistas de nuestra propia historia.',
+    items: [ // ✏️ "fecha" es la etiqueta dorada; "texto" es el globo de diálogo
+      item('historieta', 1, '17 sep 2024', 'Hola... ¿quién diría que serías mi persona favorita?'),
+      item('historieta', 2, 'Capítulo 2', 'Cada día contigo se sentía más como hogar.'),
+      item('historieta', 3, 'Capítulo 3', 'Y entonces supe que quería más de ti.'),
+      item('historieta', 4, '17 ene 2025', 'Dijimos que sí. Y fue el mejor sí de mi vida.'),
+      item('historieta', 5, 'Capítulo 5', 'Aventuras, risas y mil fotos de nosotros.'),
+      item('historieta', 6, 'Continuará...', 'Lo mejor de esta historia aún no está escrito.'),
+    ]},
+  recuerdos: {
+    nombre: 'Nuestros recuerdos', icono: '✿', tipo: 'galeria', musica: 'musica/recuerdos.mp3',
+    intro: 'Pequeños momentos que valen oro.',
+    items: [
+      item('recuerdos', 1, '', 'Escribe aquí el recuerdo'),
+      item('recuerdos', 2, '', 'Escribe aquí el recuerdo'),
+      item('recuerdos', 3, '', 'Escribe aquí el recuerdo'),
+      item('recuerdos', 4, '', 'Escribe aquí el recuerdo'),
+      item('recuerdos', 5, '', 'Escribe aquí el recuerdo'),
+      item('recuerdos', 6, '', 'Escribe aquí el recuerdo'),
+    ]},
+  razones: {
+    nombre: 'Razones por las que te amo', icono: '♥', tipo: 'tarjetas', musica: 'musica/razones.mp3',
+    intro: 'Son muchas más, pero empecemos por estas.',
+    items: [ // ✏️ Cambia títulos y textos por tus razones reales
+      item('razones', 1, '', 'Escribe aquí tu razón.', 'Tu sonrisa'),
+      item('razones', 2, '', 'Escribe aquí tu razón.', 'Tu forma de ser'),
+      item('razones', 3, '', 'Escribe aquí tu razón.', 'Cómo me haces sentir'),
+      item('razones', 4, '', 'Escribe aquí tu razón.', 'Nuestros momentos'),
+    ]},
+  musica: {
+    nombre: 'Nuestra música', icono: '♪', tipo: 'galeria', musica: 'musica/cancion.mp3',
+    intro: 'La canción que suena cuando pienso en ti.',
+    items: [ // ✏️ Fotos o recuerdos ligados a "su" canción
+      item('recuerdos', 7, '', 'Escribe aquí por qué esta canción es nuestra'),
+      item('recuerdos', 8, '', 'Escribe aquí otro recuerdo musical'),
+    ]},
+  futuro: {
+    nombre: 'Nuestro futuro', icono: '✦', tipo: 'tarjetas', musica: 'musica/futuro.mp3',
+    intro: 'Todo lo que todavía nos queda por vivir.',
+    items: [ // ✏️ Escribe aquí tus planes y sueños juntos
+      item('futuro', 1, '', 'Escribe aquí un lugar que quieras conocer con ella.', 'Lugares por conocer'),
+      item('futuro', 2, '', 'Escribe aquí un sueño que quieran cumplir.', 'Sueños por cumplir'),
+      item('futuro', 3, '', 'Escribe aquí una aventura pendiente.', 'Aventuras por vivir'),
+      item('futuro', 4, '', 'Escribe aquí lo que quieres seguir construyendo.', 'Recuerdos por crear'),
+    ]},
+};
+
+/* ===================================================================
+   LÓGICA (no necesitas tocar nada de aquí hacia abajo)
+   =================================================================== */
+const $ = s => document.querySelector(s);
+const audio = new Audio(); audio.loop = true;
+
+const foto = (i, sinPie) => `<figure class="ph"><img src="${i.src}" alt="${i.texto || ''}">
+  <span class="vacio">Aquí va tu foto<small>${i.src}</small></span>
+  ${!sinPie && (i.fecha || i.texto) ? `<figcaption>${i.fecha ? `<b>${i.fecha}</b>` : ''}${i.texto || ''}</figcaption>` : ''}</figure>`;
+
+function vista(k, s) {
+  const cuerpo = s.tipo === 'comic'
+    ? `<div class="comic">${s.items.map(i => `<div class="panel">${foto(i, 1)}<span class="fecha">${i.fecha}</span><p class="bubble">${i.texto}</p></div>`).join('')}</div>`
+    : s.tipo === 'tarjetas'
+    ? `<div class="grid">${s.items.map(i => `<article class="card">${foto(i, 1)}<h3>${i.titulo}</h3><p>${i.texto}</p></article>`).join('')}</div>`
+    : `<div class="grid">${s.items.map(i => foto(i)).join('')}</div>`;
+  return `<section class="screen view" id="v-${k}">
+    <header class="bar"><button class="link" data-back>← Volver al menú</button><button class="link" data-music>⏸ Pausar música</button></header>
+    <h2 class="title sm">${s.nombre}</h2><p class="sub sm">${s.intro}</p>${cuerpo}<p class="aviso" hidden></p></section>`;
+}
+
+$('#menuGrid').innerHTML = Object.entries(SECCIONES).map(([k, s]) => `<button data-go="${k}"><b>${s.icono}</b>${s.nombre}</button>`).join('');
+$('#views').innerHTML = Object.entries(SECCIONES).map(([k, s]) => vista(k, s)).join('');
+document.querySelectorAll('.ph img').forEach(im => {
+  const sin = () => im.parentNode.classList.add('sin');
+  im.onerror = sin; if (im.complete && !im.naturalWidth) sin();
+});
+
+function ir(id) {
+  document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
+  $('#' + id).classList.add('active'); scrollTo(0, 0);
+}
+function estado() {
+  document.querySelectorAll('[data-music]').forEach(b => b.textContent = audio.paused ? '▶ Reproducir música' : '⏸ Pausar música');
+}
+audio.onplay = audio.onpause = estado;
+
+/* Música: un solo reproductor para toda la página, así nunca suenan dos canciones.
+   Arranca con el clic del usuario (permitido por el navegador). */
+function abrir(k) {
+  const s = SECCIONES[k], aviso = $(`#v-${k} .aviso`);
+  audio.pause(); audio.src = s.musica; aviso.hidden = true; ir('v-' + k);
+  audio.play().catch(() => { aviso.textContent = 'Para escuchar música aquí, coloca tu canción en: ' + s.musica; aviso.hidden = false; });
+}
+function volver() { audio.pause(); audio.removeAttribute('src'); audio.load(); ir('menu'); }
+
+/* Acceso */
+const gate = $('#gate');
+$('#enterBtn').onclick = () => { gate.hidden = false; $('#fecha').value = ''; $('#gateMsg').textContent = ''; $('#fecha').focus(); };
+$('#gateClose').onclick = () => gate.hidden = true;
+function validar() {
+  if ($('#fecha').value.replace(/\D/g, '') === FECHA_CLAVE) {
+    gate.hidden = true;
+    const ps = document.querySelectorAll('#letter .p');
+    ps.forEach((p, i) => p.style.animationDelay = (0.4 + i * 1.4) + 's'); // ritmo de la carta
+    ir('letter');
+  } else {
+    $('#gateMsg').textContent = 'Mmm... esa no es nuestra fecha, mi amor. Piensa en el día que lo cambió todo y vuelve a intentarlo ♥';
+    const b = $('#gateBox'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+  }
+}
+$('#gateBtn').onclick = validar;
+$('#fecha').onkeydown = e => { if (e.key === 'Enter') validar(); };
+$('#startBtn').onclick = () => ir('menu');
+
+/* Clics generales: menú, volver, música, foto ampliada */
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('[data-go]')) abrir(t.closest('[data-go]').dataset.go);
+  else if (t.closest('[data-back]')) volver();
+  else if (t.closest('[data-music]')) { if (audio.getAttribute('src')) audio.paused ? audio.play().catch(() => {}) : audio.pause(); }
+  else {
+    const f = t.closest('.ph');
+    if (f && !f.classList.contains('sin')) {
+      $('#lb img').src = f.querySelector('img').src;
+      $('#lb p').textContent = (f.querySelector('figcaption') || {}).textContent || '';
+      $('#lb').hidden = false;
+    }
+  }
+});
+$('#lb').onclick = () => $('#lb').hidden = true;
+document.onkeydown = e => { if (e.key === 'Escape') { $('#lb').hidden = true; gate.hidden = true; } };
+
+/* Corazones flotantes (suaves, pocos) */
+setInterval(() => {
+  const h = document.createElement('span');
+  h.textContent = '♥'; h.style.left = Math.random() * 100 + '%';
+  h.style.fontSize = 10 + Math.random() * 18 + 'px';
+  h.style.animationDuration = 9 + Math.random() * 8 + 's';
+  $('#hearts').appendChild(h); setTimeout(() => h.remove(), 18000);
+}, 1400);
+
+/* Paleta: vino, negro, rosa oscuro y dorado. ✏️ Cámbiala aquí */
+:root{--wine:#5a0f24;--black:#0b0507;--rose:#c2456f;--gold:#d9b46c;--cream:#f6e9dc}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cormorant Garamond',Georgia,serif;color:var(--cream);font-size:1.2rem;line-height:1.6;min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 50% 0,var(--wine),var(--black) 72%) fixed}
+button,input{font:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* corazones flotantes */
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+#hearts span{position:absolute;bottom:-40px;color:var(--rose);opacity:0;animation:rise linear forwards}
+@keyframes rise{12%{opacity:.5}100%{transform:translateY(-112vh) rotate(24deg);opacity:0}}
+
+/* pantallas */
+.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:2rem 1.2rem 4rem;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.screen.active{display:flex;animation:fade .9s both}
+.view.active,#menu.active{justify-content:flex-start}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.title,.script{font-family:'Great Vibes',cursive;font-weight:400;color:var(--gold)}
+.title{font-size:clamp(2.8rem,10vw,5.8rem);line-height:1.1;text-shadow:0 0 34px rgba(217,180,108,.35)}
+.title.sm{font-size:clamp(2.4rem,7vw,3.8rem);margin-top:1rem}
+.beat{display:inline-block;color:var(--rose);animation:beat 1.4s infinite}
+@keyframes beat{50%{transform:scale(1.22)}}
+.sub{font-style:italic;font-size:1.5rem;max-width:30ch;margin:1.4rem 0 2.2rem;opacity:.92}
+.sub.sm{font-size:1.2rem;max-width:44ch;margin:.4rem 0 1.8rem}
+
+.btn{background:linear-gradient(135deg,var(--rose),var(--wine));color:var(--cream);border:1px solid var(--gold);border-radius:99px;padding:.75rem 2.4rem;font-size:1.25rem;cursor:pointer;box-shadow:0 0 0 0 rgba(217,180,108,.5);transition:transform .25s,box-shadow .25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(217,180,108,.4)}
+.link{background:none;border:0;color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+
+/* ventana de acceso */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(5,1,3,.82);display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal[hidden]{display:none}
+.box{background:linear-gradient(160deg,#2a0914,var(--black));border:1px solid var(--gold);border-radius:18px;padding:2rem 1.6rem;width:min(400px,100%);text-align:center;display:flex;flex-direction:column;gap:.9rem;align-items:center;animation:fade .5s both}
+.box .script{font-size:2.8rem}
+.box input{width:100%;text-align:center;font-size:1.6rem;letter-spacing:.12em;background:transparent;color:var(--cream);border:0;border-bottom:2px solid var(--gold);padding:.4rem}
+.msg{min-height:3.2em;font-style:italic;color:#f0a5bd}
+.shake{animation:shake .45s}
+@keyframes shake{25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+
+/* carta */
+#letter.active{justify-content:flex-start}
+.paper{max-width:640px;margin:auto;text-align:left;padding:2.2rem 1.8rem;border:1px solid var(--gold);border-radius:6px;background:linear-gradient(170deg,rgba(60,12,30,.85),rgba(14,4,8,.9));box-shadow:0 0 50px rgba(194,69,111,.25)}
+.paper .p{opacity:0;animation:fade 1.2s both;margin-bottom:1.2rem}
+.paper .big{font-size:3rem;line-height:1.1}
+.paper .btn{display:block;margin:2rem auto 0}
+
+/* menú */
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:min(820px,100%)}
+.menu button{background:rgba(90,15,36,.55);color:var(--cream);border:1px solid var(--gold);border-radius:14px;padding:1.5rem 1rem;cursor:pointer;display:flex;flex-direction:column;gap:.3rem;align-items:center;transition:transform .25s,background .25s}
+.menu button:hover{transform:translateY(-4px);background:rgba(194,69,111,.4)}
+.menu b{font-size:2rem;color:var(--gold);font-weight:400}
+
+/* secciones */
+.bar{width:min(1000px,100%);display:flex;justify-content:space-between;gap:1rem}
+.aviso{margin-top:1.5rem;color:#f0a5bd;font-style:italic;max-width:50ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.2rem;width:min(1000px,100%)}
+
+/* foto (con espacio preparado si aún no existe la imagen) */
+.ph{position:relative;aspect-ratio:4/5;overflow:hidden;border:2px solid var(--gold);border-radius:4px;background:#1a0a10;cursor:zoom-in}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .vacio{display:none}
+.ph.sin{cursor:default;border-style:dashed}
+.ph.sin img{display:none}
+.ph.sin .vacio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;color:var(--gold);padding:1rem}
+.vacio small{opacity:.7;font-size:.85rem;word-break:break-all}
+.ph figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .8rem .7rem;background:linear-gradient(transparent,rgba(0,0,0,.85));font-style:italic;text-align:left}
+.ph figcaption b{display:block;color:var(--gold);font-style:normal;font-weight:600}
+
+/* tarjetas (razones / futuro) */
+.card{background:rgba(40,8,20,.7);border:1px solid rgba(217,180,108,.5);border-radius:10px;padding:1rem;text-align:left}
+.card .ph{aspect-ratio:1/1;margin-bottom:.8rem}
+.card h3{font-family:'Great Vibes',cursive;font-weight:400;font-size:1.9rem;color:var(--gold);line-height:1.2}
+
+/* historieta */
+.comic{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;width:min(1000px,100%)}
+.panel{position:relative;background:var(--black);border:4px solid var(--black);outline:2px solid var(--gold);box-shadow:7px 7px 0 var(--rose)}
+.panel:nth-child(6n+1),.panel:nth-child(6n+4){grid-column:span 4}
+.panel:nth-child(6n+2),.panel:nth-child(6n+3){grid-column:span 2}
+.panel:nth-child(6n+5),.panel:nth-child(6n){grid-column:span 3}
+.panel .ph{aspect-ratio:4/3;border:0;border-radius:0}
+.fecha{position:absolute;top:-10px;left:-10px;background:var(--gold);color:var(--black);font-weight:600;padding:.1rem .7rem;transform:rotate(-3deg)}
+.bubble{position:relative;margin:-22px 12px 14px;background:var(--cream);color:var(--black);padding:.6rem .9rem;border-radius:20px;font-style:italic;font-size:1.05rem;line-height:1.35;text-align:left}
+.bubble::after{content:"";position:absolute;bottom:-9px;left:26px;border:9px solid transparent;border-bottom:0;border-top-color:var(--cream)}
+@media(max-width:700px){.comic{grid-template-columns:1fr}.panel:nth-child(n){grid-column:auto}}
+
+/* foto ampliada */
+#lb{position:fixed;inset:0;z-index:30;background:rgba(5,1,3,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1rem;cursor:zoom-out}
+#lb[hidden]{display:none}
+#lb img{max-width:100%;max-height:82vh;border:2px solid var(--gold);border-radius:4px}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}#hearts{display:none}}
