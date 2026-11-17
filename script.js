@@ -104,17 +104,53 @@ document.querySelectorAll('.ph img').forEach(im => {
 function ir(id) {
   document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
   $('#' + id).classList.add('active'); scrollTo(0, 0);
+  // el control de la canción de la carta se ve en la carta y en el menú
+  $('#musicCtl').hidden = !(id === 'letter' || id === 'menu') || !!$('#musicCtl').dataset.fallo;
 }
 function estado() {
   document.querySelectorAll('[data-music]').forEach(b => b.textContent = audio.paused ? '▶ Reproducir música' : '⏸ Pausar música');
 }
 audio.onplay = audio.onpause = estado;
 
+/* ---------- Canción de la carta ----------
+   ✏️ El MP3 debe estar en la MISMA carpeta que index.html. Para cambiar de
+   canción o de volumen (0 a 1) edita estas dos líneas. */
+const CANCION_CARTA = 'cancion-carta.mp3';
+const VOLUMEN_CARTA = 0.35; // suave (en iPhone el volumen lo controla el celular)
+
+const carta = new Audio(CANCION_CARTA);
+const ctl = $('#musicCtl');
+let fade;
+const etiqueta = t => ctl.querySelector('span').textContent = t;
+function pintar() {
+  ctl.classList.remove('invita');
+  ctl.classList.toggle('suena', !carta.paused);
+  etiqueta(carta.ended ? 'Escuchar de nuevo' : carta.paused ? 'Reanudar música' : 'Pausar música');
+}
+function entradaSuave() { // sube el volumen poco a poco al empezar o reanudar
+  clearInterval(fade); carta.volume = 0;
+  fade = setInterval(() => {
+    carta.volume = Math.min(VOLUMEN_CARTA, carta.volume + 0.02);
+    if (carta.volume >= VOLUMEN_CARTA) clearInterval(fade);
+  }, 120);
+}
+carta.onplay = () => { pintar(); entradaSuave(); };
+carta.onpause = carta.onended = pintar;
+carta.onerror = () => { ctl.dataset.fallo = 1; ctl.hidden = true; console.warn('No se encontró ' + CANCION_CARTA + ' junto a index.html'); };
+ctl.onclick = () => carta.paused ? carta.play().catch(() => {}) : carta.pause();
+function iniciarCarta() { // se llama dentro del clic de "Entrar" (así el navegador lo permite)
+  carta.play().catch(err => {
+    if (err && err.name === 'NotAllowedError') { // el navegador la bloqueó: botón para iniciarla
+      ctl.classList.add('invita'); etiqueta('Toca para iniciar nuestra canción'); ctl.hidden = false;
+    }
+  });
+}
+
 /* Música: un solo reproductor para toda la página, así nunca suenan dos canciones.
    Arranca con el clic del usuario (permitido por el navegador). */
 function abrir(k) {
   const s = SECCIONES[k], aviso = $(`#v-${k} .aviso`);
-  audio.pause(); audio.src = s.musica; aviso.hidden = true; ir('v-' + k);
+  carta.pause(); audio.pause(); audio.src = s.musica; aviso.hidden = true; ir('v-' + k);
   audio.play().catch(() => { aviso.textContent = 'Para escuchar música aquí, coloca tu canción en: ' + s.musica; aviso.hidden = false; });
 }
 function volver() { audio.pause(); audio.removeAttribute('src'); audio.load(); ir('menu'); }
@@ -128,7 +164,7 @@ function validar() {
     gate.hidden = true;
     const ps = document.querySelectorAll('#letter .p');
     ps.forEach((p, i) => p.style.animationDelay = (0.4 + i * 1.4) + 's'); // ritmo de la carta
-    ir('letter');
+    ir('letter'); iniciarCarta();
   } else {
     $('#gateMsg').textContent = 'Mmm... esa no es nuestra fecha, mi amor. Piensa en el día que lo cambió todo y vuelve a intentarlo ♥';
     const b = $('#gateBox'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
